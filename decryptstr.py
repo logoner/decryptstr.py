@@ -1,7 +1,14 @@
 """
+Defne Defne
 Здравствуйте  . Не поможете ли вы помочь расшифровывать текст начинающему  которая только начала обучает языки программирование.  Вид шифра :шифр простой замены
 Данный текст:КЖЛЧШМРЖБНЯЭЪЯПЙЪОЖЩЖВШНЛЖПЖКЯМЯЕЖЩШПЭЫЖПШСЙЦСЯЖЭПРКЖЛЧШМРЗВЯАЙЧЖСЪОЛЭМШВЖЫЖМРЖМЖЯКЛШМРЮЖММЯБНЯЫВЯЫМЯБВЯБМТООЭСШВИЖБЯСВЯБМТШМКПРРНЯЗВРПШЭЙМШЫЖУЫШЮСЯВСЖЮЖМРЖЕПРУШБИРГМЖЭЪЯПЙЪРГЫМЖБРПРЭШЧЯЖЕЯПЙИЖЖЮЖЛЖАНШЛОМЖЫЖПЙЭЯЖЫРМЖММТЖИСШСТВЭСОНЗСМШЪЯМЖЬВВЯБМОСЖЧВЛЖЧЖМЖЧВЪЯЧМШСЖНЛЯЫЯПУШПШЭЙОНЯЛМШЗЛШЕЯСШМШЫЪЯЫЯЧВНЖЛВТГЮРЭПШГДЖВЛШПЗКЛЖБНЛРМЖЭГЯППОЯСЪЛТСТБСЖЪЭСЯЮЖЛЖЫМЯБИРДЛСЖПЖКЛШЧЧТЕЖЛМИСЯЛДДШВЪЯСЯЛЯБРАПШКШПРЭЙНЯЫЛЯЕМЯЭСРЖКЯЕЖЭЖЫТЭВРПЙЭЯМЯЧВЭВЗАРЭАШЗВПЖМРЖЧЯЛШАЛТВЖЫРНПЯЧШСРЮЖЭЪРГЯСМЯИЖМРБЭИШЭКЖЛЧШМРЖБНЯПОЮЖММТЖМЯВТЖАМШЮЖМРЗЪЯЫЯВТГКЛОННЪЯЫШЕТПРРЭНЯПЙАЯВШМТЫПЗЮСЖМРЗИРДЛСЖПЖКЛШЧЧТЬРЧЧЖЛЧШМШВЛЖАОПЙСШСЖДЖВЛШПЗГЯППЭЧЯКНЛЖЫЭСШВРСЙВЧРМРЭСЖЛЭСВЯРМЯЭСЛШММТГЫЖПЖЖЕЯПЖЖНЯПМТБЯСЪЛТСТБСЖЪЭС
  Тема; криптография
+ 
+ My answer:
+ re>@Defne Defne
+  Here you need to use the frequency analysis of the letters of the Russian language.  See frequency table.
+ https://dpva.ru/Guide/GuideUnitsAlphabets/Alphabets/FrequencyRuLetters/
+ You take a line of text, count how often different letters are repeated, and based on the table, you make an assumption about the probability of replacement.  You check it with a replacement and if you've guessed right, you get the decrypted text.
 """
 #import pprint
 
@@ -11,6 +18,9 @@
 
 # encrypted message
 em = encryptedMessage = "КЖЛЧШМРЖБНЯЭЪЯПЙЪОЖЩЖВШНЛЖПЖКЯМЯЕЖЩШПЭЫЖПШСЙЦСЯЖЭПРКЖЛЧШМРЗВЯАЙЧЖСЪОЛЭМШВЖЫЖМРЖМЖЯКЛШМРЮЖММЯБНЯЫВЯЫМЯБВЯБМТООЭСШВИЖБЯСВЯБМТШМКПРРНЯЗВРПШЭЙМШЫЖУЫШЮСЯВСЖЮЖМРЖЕПРУШБИРГМЖЭЪЯПЙЪРГЫМЖБРПРЭШЧЯЖЕЯПЙИЖЖЮЖЛЖАНШЛОМЖЫЖПЙЭЯЖЫРМЖММТЖИСШСТВЭСОНЗСМШЪЯМЖЬВВЯБМОСЖЧВЛЖЧЖМЖЧВЪЯЧМШСЖНЛЯЫЯПУШПШЭЙОНЯЛМШЗЛШЕЯСШМШЫЪЯЫЯЧВНЖЛВТГЮРЭПШГДЖВЛШПЗКЛЖБНЛРМЖЭГЯППОЯСЪЛТСТБСЖЪЭСЯЮЖЛЖЫМЯБИРДЛСЖПЖКЛШЧЧТЕЖЛМИСЯЛДДШВЪЯСЯЛЯБРАПШКШПРЭЙНЯЫЛЯЕМЯЭСРЖКЯЕЖЭЖЫТЭВРПЙЭЯМЯЧВЭВЗАРЭАШЗВПЖМРЖЧЯЛШАЛТВЖЫРНПЯЧШСРЮЖЭЪРГЯСМЯИЖМРБЭИШЭКЖЛЧШМРЖБНЯПОЮЖММТЖМЯВТЖАМШЮЖМРЗЪЯЫЯВТГКЛОННЪЯЫШЕТПРРЭНЯПЙАЯВШМТЫПЗЮСЖМРЗИРДЛСЖПЖКЛШЧЧТЬРЧЧЖЛЧШМШВЛЖАОПЙСШСЖДЖВЛШПЗГЯППЭЧЯКНЛЖЫЭСШВРСЙВЧРМРЭСЖЛЭСВЯРМЯЭСЛШММТГЫЖПЖЖЕЯПЖЖНЯПМТБЯСЪЛТСТБСЖЪЭС"
+
+# decrypted message
+dm = decryptedMessage = ""
 
 # dictionary of the frequency of Russian letters
 forl = frequencyOfRussianLetters = {
@@ -156,11 +166,49 @@ def transcriptDictionary(basedict, encdict):
         # минимальной разницей.
         # (сюда можно вставить проверку на
         # повторяемость, если было - пропустить шаг)
+        if keyhit not in hitlist:
+            hitlist.append(keyhit)
+        else:
+            continue
+        
         resdict[baseletter] = keyhit
     
     return resdict
-            
+
+# find offset keys for replacement keys relative to
+# the encrypted message
+def alphabetical_offset(enckeys):
+    ru_alphabet = list("абвгдеёжзийклмнопрстуфхцчшщъыьэюя")
+    
+    for i in enckeys:
+        base = ru_alphabet.index(i)
+        encr = ru_alphabet.index(enckeys[i].lower())
+        offset = encr - base
+        print(i,":",enckeys[i],">>",offset)
+        
+# decrypting a message using the encryptkeys value and the encrypted message
+def decryptingMessage(encrypted_message, encrypted_keys ):
+    message = ""
+    for i in encrypted_message:
+        for key in encrypted_keys:
+            if encrypted_keys[key] == i:
+                message += key
+    return message
+
 # находим ключи замены для шифрования
 encryptkeys = transcriptDictionary(forl, res2)
 
+#test
+print("пара: буква в обычном алфавите и буква в зашифрованном сообщении")
 printdict(encryptkeys)
+
+print()
+print("предидущие пары и смещение")
+alphabetical_offset(encryptkeys)
+
+dm = decryptingMessage(em, encryptkeys)
+
+print()
+print("расшифрованное сообщение (ну почти о_о)")
+print()
+print(dm)
